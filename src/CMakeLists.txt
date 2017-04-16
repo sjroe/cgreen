@@ -13,11 +13,11 @@ set(CGREEN_PRIVATE_INCLUDE_DIRS
   ${PROJECT_BINARY_DIR}
 )
 
-if (MSVC)
+if (WIN32)
   LIST(APPEND CGREEN_PRIVATE_INCLUDE_DIRS
-    ${PROJECT_SOURCE_DIR}/../include/cgreen/internal/windows_headers
+    ${PROJECT_SOURCE_DIR}/include/cgreen/internal/windows_headers
   )
-endif(MSVC)
+endif(WIN32)
 
 set(CGREEN_SHARED_LIBRARY
   cgreen_shared

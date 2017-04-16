@@ -12,7 +12,7 @@
 #include "cgreen/internal/android_headers/androidcompat.h"
 #endif // #ifdef __ANDROID__
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <wincompat.h>
 #endif
 

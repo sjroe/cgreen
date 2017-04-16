@@ -1,13 +1,15 @@
 #ifndef __WINCOMPAT_H__
 #define __WINCOMPAT_H__
-#ifdef _MSC_VER
+
 #include "stdarg.h"
 #include "windows.h"
 #include "direct.h"
 
 #define gmtime_r(x,y) gmtime_s(y,x)
 
+#ifndef __MINGW32__
 typedef int pid_t;
+#endif
 
 #if _MSC_VER < 1900
    #define snprintf sprintf_s
@@ -25,6 +27,5 @@ typedef int pid_t;
 #define PRIdPTR     "Id"
 #endif
 
-#endif //_MSC_VER
 #endif //__WINCOMPAT_H__
 

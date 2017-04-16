@@ -212,9 +212,11 @@ Ensure(ConstraintMessage, for_no_mock_parameters_with_parameter_constraint) {
     forgot_to_pass_parameters_mock(0);
 }
 
+#ifdef SIGQUIT
 Ensure(ConstraintMessage, increments_exception_count_when_terminating_via_SIGQUIT) {
-    raise(SIGQUIT);
+     raise(SIGQUIT);
 }
+#endif
 
 Ensure(ConstraintMessage, increments_exception_count_when_terminating_via_SIGTERM) {
     raise(SIGTERM);

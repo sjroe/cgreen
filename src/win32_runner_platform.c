@@ -118,7 +118,7 @@ static void AddEnvironmentVariable(struct environment* env,const char* varName, 
     StringCbCatA(env->p_head, envSize, "=");
     StringCbCatA(env->p_head, envSize, valueString);
     StringCbCatA(env->p_head, envSize, "\0");
-    len = strnlen_s(env->p_head, envSize);
+    len = strnlen(env->p_head, envSize);
     env->p_head += (len + 1);
 }
 

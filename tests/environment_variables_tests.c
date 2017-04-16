@@ -12,7 +12,7 @@ using namespace cgreen;
 #endif
 
 Describe(EnvironmentVariables);
-BeforeEach(EnvironmentVariables) { setenv("TEST", "test", true); }
+BeforeEach(EnvironmentVariables) { putenv("TEST=test"); }
 AfterEach(EnvironmentVariables) {}
 
 Ensure(EnvironmentVariables, set_in_before_each_should_be_set_in_test) {

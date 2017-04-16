@@ -10,7 +10,7 @@
 #include "cgreen/internal/android_headers/androidcompat.h"
 #endif // #ifdef __ANDROID__
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <wincompat.h>
 //disable warning on windows
 //'getpid','write': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _getpid, _write

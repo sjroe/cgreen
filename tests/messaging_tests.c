@@ -35,7 +35,7 @@ static int signal_received = 0;
 static void catch_signal(int s) {
     (void)s;
     signal_received = 1;
-    signal(SIGPIPE, SIG_DFL);
+    // signal(SIGPIPE, SIG_DFL);
 }
 
 Ensure(failure_reported_and_exception_thrown_when_messaging_would_block) {
@@ -44,7 +44,7 @@ Ensure(failure_reported_and_exception_thrown_when_messaging_would_block) {
     int loop;
 
     signal_received = 0;
-    signal(SIGPIPE, catch_signal);
+    // signal(SIGPIPE, catch_signal);
     fprintf(stderr, "Expected output: ");
     for (loop = 0; loop < LOOPS; loop++) {
         send_cgreen_message(messaging, 99);
