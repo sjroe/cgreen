@@ -11,17 +11,11 @@
 #define SECOND  (1000)
 static void run_named_test_child(TestSuite *suite, const char *name, TestReporter *reporter);
 
+#define ENV_SIZE 4096
 
 static void CALLBACK stop(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
-#ifdef CGREEN_INTERNAL_WITH_GCOV
-    if (1)
-#else
-    if (NULL != getenv("CGREEN_CHILD_EXIT_WITH_FLUSH"))
-#endif
-        exit(EXIT_SUCCESS);
-    else
-        _exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS);
 }
 
 void die_in(unsigned int seconds) {
@@ -98,7 +92,7 @@ void run_specified_test_if_child(TestSuite *suite, TestReporter *reporter){
 
 struct environment
 {
-    char env[MAX_PATH];
+    char env[ENV_SIZE];
     char *p_head;
 };
 
@@ -113,7 +107,7 @@ struct environment* create_environment()
 static void AddEnvironmentVariable(struct environment* env,const char* varName, const char* valueString)
 {
     size_t len;
-    size_t envSize = MAX_PATH - (env->p_head-env->env);
+    size_t envSize = ENV_SIZE - (env->p_head-env->env);
     StringCbCopyA(env->p_head, envSize, varName);
     StringCbCatA(env->p_head, envSize, "=");
     StringCbCatA(env->p_head, envSize, valueString);
@@ -132,19 +126,19 @@ static void dispose_environment(struct environment* env)
     free(env);
 }
 
-
 void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporter *reporter) {
-#define COMMAND_LINE_LENGTH (2*MAX_PATH)
+#define COMMAND_LINE_LENGTH (2 * MAX_PATH)
     BOOL success;
-    char fname[MAX_PATH+1]; //make enough room for full path  plus null terminator
+    char fname[MAX_PATH + 1]; //make enough room for full path  plus null terminator
     struct environment* p_environment = create_environment();
     char handleString[256];
+    char path[ENV_SIZE];
 
     STARTUPINFOA siStartupInfo;
     PROCESS_INFORMATION piProcessInfo;
 
     //get executable path
-    GetModuleFileNameA(NULL, fname,MAX_PATH);
+    GetModuleFileNameA(NULL, fname, MAX_PATH);
 
     //launch process
     memset(&siStartupInfo, 0, sizeof(siStartupInfo));
@@ -160,12 +154,16 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
     //put name of test to run in environment
     AddEnvironmentVariable(p_environment, CGREEN_TEST_TO_RUN, test->name);
 
+    //pass the current environment PATH to the child process
+    GetEnvironmentVariableA("PATH", path, sizeof(path));
+    AddEnvironmentVariable(p_environment, "PATH", path);
+
     (*reporter->start_test)(reporter, test->name);
 
     uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
 
-    //success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW , p_environment, NULL, &siStartupInfo, &piProcessInfo);
-    success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS , p_environment, NULL, &siStartupInfo, &piProcessInfo);
+    success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS, p_environment, NULL, &siStartupInfo, &piProcessInfo);
+
     dispose_environment(p_environment);
     WaitForSingleObject(piProcessInfo.hProcess,INFINITE);
 
